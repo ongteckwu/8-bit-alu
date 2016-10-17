@@ -1,0 +1,30 @@
+global Const {
+  const AND = 4b1000;
+  const OR = 4b1110;
+  const XOR = 4b0110;
+  const A = 4b1010;
+}
+
+module bool (
+    input alufn30[4],
+    input a[8],
+    input b[8],
+    output out[8]
+    
+  ) {
+
+  always {
+    case(alufn30[3:0]) {
+      Const.AND:
+        out[7:0] = a[7:0]&b[7:0];
+      Const.OR:
+        out[7:0] = a[7:0]|b[7:0];
+      Const.XOR:
+        out[7:0] = a[7:0]^b[7:0];
+      Const.A:
+        out[7:0] = a[7:0];
+      default:
+        outs[7:0] = a[7:0];
+    }
+  }
+}
