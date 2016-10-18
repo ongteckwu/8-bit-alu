@@ -1,0 +1,28 @@
+module additon (
+    input a[8],
+    input b[8],
+    input alufn0,
+    output sum[8]
+    
+      ) {
+  sig cout[8];
+  always {
+        cout[0] = alufn0;
+        sum[0] = a[0]^b[0]^cout[0];
+        cout[1] = ((a[0]^b[0])&cout[0] | a[0]&b[0]);
+        sum[1] = a[1]^b[1]^cout[1];
+        cout[2] = ((a[1]^b[1])&cout[1] | a[1]&b[1]);
+        sum[2] = a[2]^b[2]^cout[2];
+        cout[3] = ((a[2]^b[2])&cout[2] | a[2]&b[2]);
+        sum[3] = a[3]^b[3]^cout[3];
+        cout[4] = ((a[3]^b[3])&cout[3] | a[3]&b[3]);
+        sum[4] = a[4]^b[4]^cout[4];
+        cout[5] = ((a[4]^b[4])&cout[4] | a[4]&b[4]);
+        sum[5] = a[5]^b[5]^cout[5];
+        cout[6] = ((a[5]^b[5])&cout[5] | a[5]&b[5]);
+        sum[6] = a[6]^b[6]^cout[6];
+        cout[7] = ((a[6]^b[6])&cout[6] | a[6]&b[6]);
+        sum[7] = a[7]^b[7]^cout[7];
+  }
+}
+//(a[0]&b[0]);

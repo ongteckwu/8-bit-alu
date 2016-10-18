@@ -1,0 +1,25 @@
+module muxleft (
+    input b[3],
+    input a[8],
+    output x[8]
+  ) {
+  sig tp1[8];
+  sig tp2[8];
+  always {
+  if(b[2] == 1){
+      tp1[7:4] = a[3:0];
+      tp1[3:0] = 4b0000;}
+  else
+    tp1 = a;
+  if(b[1] == 1){
+      tp2[7:2] = tp1[5:0];
+      tp2[1:0] = 2b00;}
+  else
+      tp2 = tp1;
+  if(b[0] == 1){
+      x[7:1] = tp2[6:0];
+      x[0] = 0;}
+  else
+      x = tp2;
+  }
+}
