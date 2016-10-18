@@ -3,6 +3,12 @@ global Const {
   const OR = 4b1110;
   const XOR = 4b0110;
   const A = 4b1010;
+  const B = 4b0101;
+  const NAND = 4b0111;
+  const NOR = 4b0001;
+  const XNOR = 4b1001;
+  const INVA = 4b1111; // does not conform to Mux Implementation
+  const INVB = 4b0000; // does not conform to Mux Implementation
 }
 
 module bool (
@@ -16,15 +22,23 @@ module bool (
   always {
     case(alufn30[3:0]) {
       Const.AND:
-        out[7:0] = a[7:0]&b[7:0];
+        out = a&b;
       Const.OR:
-        out[7:0] = a[7:0]|b[7:0];
+        out = a|b;
       Const.XOR:
-        out[7:0] = a[7:0]^b[7:0];
+        out = a^b;
       Const.A:
-        out[7:0] = a[7:0];
+        out = a;
+      Const.B:
+        out = b;
+      Const.NAND:
+        out = ~(a&b);
+      Const.NOR:
+        out = ~(a|b);
+      Const.XNOR:
+        out = ~(a^b);
       default:
-        out[7:0] = a[7:0];
+        out = 8b0;
     }
   }
 }
