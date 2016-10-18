@@ -1,16 +1,3 @@
-global Const {
-  const AND = 4b1000;
-  const OR = 4b1110;
-  const XOR = 4b0110;
-  const A = 4b1010;
-  const B = 4b0101;
-  const NAND = 4b0111;
-  const NOR = 4b0001;
-  const XNOR = 4b1001;
-  const INVA = 4b1111; // does not conform to Mux Implementation
-  const INVB = 4b0000; // does not conform to Mux Implementation
-}
-
 module bool (
     input alufn30[4],
     input a[8],
@@ -19,26 +6,11 @@ module bool (
     
   ) {
 
+  var i;
+  
   always {
-    case(alufn30[3:0]) {
-      Const.AND:
-        out = a&b;
-      Const.OR:
-        out = a|b;
-      Const.XOR:
-        out = a^b;
-      Const.A:
-        out = a;
-      Const.B:
-        out = b;
-      Const.NAND:
-        out = ~(a&b);
-      Const.NOR:
-        out = ~(a|b);
-      Const.XNOR:
-        out = ~(a^b);
-      default:
-        out = 8b0;
-    }
+    for (i = 0; i < 8; i++) {
+        out[i] = alufn30[a[i]+b[i]];
+    } 
   }
 }
