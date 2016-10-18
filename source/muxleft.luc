@@ -1,0 +1,20 @@
+module muxleft (
+    input b[3],
+    input a[8],
+    output x[8]
+  ) {
+
+  always {
+  if(b[2] == 1){
+      x[7:4] = a[3:0];
+      x[3:0] = 4b0000;}
+  else
+    x = a;
+  if(b[1] == 1){
+      x[7:2] = a[5:0];
+      x[1:0] = 2b00;}
+  if(b[0] == 1){
+      x[7:1] = a[6:0];
+      x[0] = 0;}
+  }
+}
