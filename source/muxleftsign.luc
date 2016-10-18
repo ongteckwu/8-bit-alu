@@ -1,0 +1,29 @@
+module muxleftsign (
+    input b[3],
+    input a[8],
+    output x[8]
+  ) {
+  sig tp1[8];
+  sig tp2[8];
+  sig sign;
+  
+  always {
+  sign = a[7];
+      
+  if(b[2] == 1){
+      tp1[7:4] = a[3:0];
+      tp1[3:0] = 4x{sign};}
+  else
+    tp1 = a;
+  if(b[1] == 1){
+      tp2[7:2] = tp1[5:0];
+      tp2[1:0] = 2x{sign};}
+  else
+      tp2 = tp1;
+  if(b[0] == 1){
+      x[7:1] = tp2[6:0];
+      x[0] = sign;}
+  else
+      x = tp2;
+  }
+}
