@@ -1,9 +1,0 @@
-module nor8 (
-    input sum[8],
-    output z
-      ) {
-
-  always {
-      z = ~(sum[0] | sum[1] | sum[2] | sum[3] | sum[4] | sum[5] | sum[6] | sum[7]);
-  }
-}

@@ -10,14 +10,14 @@ module add (
   sig sum[8];
   sig xb[8];
   additon add;
-  nor8 nor;
+ // nor8 nor;
 
   always {
     case(alufn10[1:0]){
       b00:
         xb = b;
       b01:
-        xb = ~b;
+        xb = b^8x{alufn10[0]};
       default:
         xb = b;
     }
@@ -26,12 +26,12 @@ module add (
     add.b = xb;
     sum = add.sum;
     
-    out = sum[7:0];
+    out = sum;
     n = sum[7];
     v = (a[7]&(xb[7])&(~sum[7]))|(~a[7]&~xb[7]&sum[7]);
     
-    nor.sum = sum;
-    z = nor.z;
+   // nor.sum = sum;
+    z = ~(((sum[0] | sum[1]) | (sum[2] | sum[3])) | ((sum[4] | sum[5]) | (sum[6] | sum[7])));
   }
 }
 

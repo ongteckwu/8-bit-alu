@@ -3,18 +3,23 @@ module muxright (
     input a[8],
     output x[8]
   ) {
-
+  sig tp1[8];
+  sig tp2[8];
   always {
   if(b[2] == 1){
-      x[7:4] = 4b0000;
-      x[3:0] = a[7:4];}
+      tp1[7:4] = 4b0000;
+      tp1[3:0] = a[7:4];}
   else
-    x = a;
+      tp1 = a;
   if(b[1] == 1){
-      x[7:6] = 2b00;
-      x[5:0] = a[7:2];}
+      tp2[7:6] = 2b00;
+      tp2[5:0] = tp1[7:2];}
+  else
+      tp2 = tp1;
   if(b[0] == 1){
       x[7] = 1b0;
-      x[6:0] = a[7:1];}
+      x[6:0] = tp2[7:1];}
+  else
+      x = tp2;
   }
 }

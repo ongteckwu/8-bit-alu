@@ -1,8 +1,8 @@
 global Ops {
-  const ADDER 2b00;
-  const BOOL 2b01;
-  const SHIFT 2b10;
-  const COMP 2b11;
+  const ADDER = 2b00;
+  const BOOL = 2b01;
+  const SHIFT = 2b10;
+  const COMP = 2b11;
 }
 
 module mojo_top (
@@ -37,13 +37,13 @@ module mojo_top (
   sig alufn[6];
   sig a[8];
   sig b[8];
-  sig o[8];
+  sig o8[8];
   
   // initialize components
-  add add8;
-  compare compare8;
-  boolean boolean8;
-  shift shift8;
+  add add8;//(8b0),.b(8b0),.alufn10(2b0));
+  compare compare8;//lufn21(2b0),.v(0),.n(0),.z(0));
+  bool bool8;//(.alufn30(4b0),.a(8b0),.b(8b0));
+  shift shift8;//(.alufn10(2b0),.a(8b0),.b(3b0));
 
   always {
     reset_cond.in = ~rst_n; // input raw inverted reset signal
@@ -60,60 +60,49 @@ module mojo_top (
     io_sel = 4hf;           // select no digits  
     
     // inputs of ALU
-    alufn[5:0] = io_dip[0][5:0];
+    alufn[5:0] = io_dip[2][5:0];
     a[7:0] = io_dip[1][7:0];
-    b[7:0] = io_dip[2][7:0];
+    b[7:0] = io_dip[0][7:0];
+    
+    add8.a = a;
+    add8.b = b;
+    add8.alufn10 = alufn[1:0];
+    bool8.a = a;
+    bool8.b = b;
+    bool8.alufn30 = alufn[3:0];
+    shift8.a = a;
+    shift8.b = b[2:0];
+    shift8.alufn10 = alufn[1:0];
+    compare8.z = add8.z;
+    compare8.v = add8.v;
+    compare8.n = add8.n;
+    compare8.alufn21 = alufn[2:1];
     
     // TMUX to select operation
     case (alufn[5:4]) {
       Ops.ADDER:
-        // input of adder
-	      add8.a[7:0] = a[7:0];
-        add8.b[7:0] = b[7:0];
-        add8.alufn10[1:0] = alufn[1:0];
-        
         // output of adder
         o8[7:0] = add8.out[7:0];
         
       Ops.BOOL:
-        // input of boolean
-        bool8.a[7:0] = a[7:0];
-        bool8.b[7:0] = b[7:0];
-        bool8.alufn30[3:0] = alufn[3:0];
-        
         // output of boolean
         o8[7:0] = bool8.out[7:0];
       
       Ops.SHIFT:
-        // input of shift
-        shift8.a[7:0] = a[7:0];
-        shift8.b[7:0] = b[7:0];
-        shift8.alufn10[1:0] = alufn[1:0];
-        
         // output of shift
-        o8[7:0] = shift8.out[7:0]; 
+        o8[7:0] = shift8.out[7:0];
       
       Ops.COMP:
-        // input of adder
-	      add8.a[7:0] = a[7:0];
-        add8.b[7:0] = b[7:0];
-        add8.alufn10[1:0] = alufn[1:0];
-        
-        // input of compare (from adder)
-        compare8.z = add8.z;
-        compare8.v = add8.v;
-        compare8.n = add8.n;
-        compare8.alufn21 = alufn[2:1];
-        
         // output of compare 
-        o8[7:0] = compare8.out[7:0];
+        add8.alufn10 = 2b01;
+        o8 = compare8.out[7:0];
         
       default:
-        o8[7:0] = 8b0;
+        o8 = 8b1;
     }
     
     // output of ALU 
-    io_led[0][7:0] = o8[7:0];
+    io_led[0] = o8;
     
     
   }

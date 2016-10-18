@@ -16,14 +16,14 @@ module shift (
     mrights.a = a;
     mrights.b = b;
     case(alufn10){
-    00:
+    2b00:
       out = mleft.x;
-    01:
+    2b01:
       out = mright.x;
-    11:
+    2b11:
       out = mrights.x;
     default:
-      out = a;
+      out = 8b11111111;
     }
   }
 }
