@@ -1,6 +1,6 @@
 //selector to choose which adder operation to perform
 module add (
-    input alufn10[2],
+    input alufn20[3],
     input a[8],
     input b[8],
     output out[8],
@@ -8,31 +8,56 @@ module add (
     output v,
     output z
       ) {
-  sig sum[8];    //storing the values of the computation for n and v values
-  sig xb[8];     //used to select if addition or subtraction operation is to be done
+  sig sum[8];
+  sig xb[8];
+  var isSub;
+ // nor8 nor;
   additon add;
 
   always {
-    //choosing the adder module
-    case(alufn10[1:0]){
-      b00:
-        xb = b;
-      b01:
-        xb = b^8x{alufn10[0]};
-      default:
-        xb = b;
+    // Initialization
+    isSub = 0;
+    add.alufn0 = 0;
+    add.a = 0;
+    add.b = 0;
+    sum = 8b0;
+    out = 0;
+    xb = 8b0;
+    
+    case(alufn20[2:0]) {
+      3b000: //addition
+        add.alufn0=alufn20[0];
+        add.a = a;
+        add.b = b;
+        sum = add.sum;
+        out = sum;
+      3b001: //subtraction
+        isSub = 1; // to compute z, v, and n
+        xb = b^8x{alufn20[0]};
+        add.alufn0=alufn20[0];
+        add.a = a;
+        add.b = xb;
+        sum = add.sum;
+        out = sum;
+      3b010: // multiplication
+        out = a*b;
+      3b011: // division
+        out = a/b;
+      3b100: // modulo
+        out = a-(a/b*b);
+        
     }
-    add.alufn0=alufn10[0];
-    add.a = a;
-    add.b = xb;
-    sum = add.sum;
-    
-    out = sum;
-    
-    //n, v and z values for compare module
-    n = sum[7];
-    v = (a[7]&(xb[7])&(~sum[7]))|(~a[7]&~xb[7]&sum[7]);
-    z = ~(((sum[0] | sum[1]) | (sum[2] | sum[3])) | ((sum[4] | sum[5]) | (sum[6] | sum[7])));
+
+    case(isSub) { // for comparison only
+      1: 
+        n = sum[7];
+        v = (a[7]&(xb[7])&(~sum[7]))|(~a[7]&~xb[7]&sum[7]);
+       // nor.sum = sum;
+        z = ~(((sum[0] | sum[1]) | (sum[2] | sum[3])) | ((sum[4] | sum[5]) | (sum[6] | sum[7])));
+      default: 
+        n = 0;
+        v = 0;
+        z = 0;
+    }
   }
 }
-

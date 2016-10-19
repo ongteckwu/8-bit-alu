@@ -11,7 +11,7 @@ module bool (
   
   always {
     for (i = 0; i < 8; i++) {
-        out[i] = alufn30[a[i]+b[i]];
+        out[i] = alufn30[c{b[i],a[i]}];
     } 
   }
 }

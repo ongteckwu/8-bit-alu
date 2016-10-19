@@ -10,6 +10,7 @@ module shift (
   muxleft mleft;
   muxright mright;
   muxrightsign mrights;
+  muxleftsign mlefts;
   
   always {
     //instantializing the multiplexers' inputs
@@ -19,7 +20,8 @@ module shift (
     mright.b = b;
     mrights.a = a;
     mrights.b = b;
-    
+    mlefts.a = a;
+    mlefts.b = b;
     //choosing the multiplexer used based on the values of alufn[0:1]
     case(alufn10){
     2b00:
@@ -28,6 +30,8 @@ module shift (
       out = mright.x;
     2b11:
       out = mrights.x;
+    2b10:
+      out = mlefts.x;    
     default:
       out = 8b11111111;
     }

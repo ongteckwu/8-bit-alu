@@ -178,6 +178,7 @@ module mojo_top (
      
     add8.a = a;
     add8.b = b;
+    add8.alufn20 = alufn[2:0];
     bool8.a = a;
     bool8.b = b;
     shift8.a = a;
@@ -185,7 +186,6 @@ module mojo_top (
     compare8.z = add8.z;
     compare8.v = add8.v;
     compare8.n = add8.n;
-    add8.alufn10 = alufn[1:0];
     bool8.alufn30 = alufn[3:0];
     shift8.alufn10 = alufn[1:0];
     compare8.alufn31 = alufn[3:1];
@@ -206,7 +206,7 @@ module mojo_top (
       
       Ops.COMP:
         // output of compare 
-        add8.alufn10 = 2b01;
+        add8.alufn20 = 3b001;
         o8 = compare8.out[7:0];
         
       default:
