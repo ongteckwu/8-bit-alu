@@ -1,9 +1,0 @@
-module division (
-    
-    output out
-  ) {
-
-  always {
-    out = 0;
-  }
-}

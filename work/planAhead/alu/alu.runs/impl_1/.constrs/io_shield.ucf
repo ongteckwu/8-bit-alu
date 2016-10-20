@@ -76,21 +76,11 @@ NET "io_sel[3]" LOC = P12;
 NET "io_sel[3]" IOSTANDARD = LVTTL;
 
 # PULLDOWN is needed to prevent floating inputs
-NET "io_button[0]" LOC = P137;
-NET "io_button[0]" IOSTANDARD = LVTTL;
-NET "io_button[0]" PULLDOWN;
-NET "io_button[1]" LOC = P140;
-NET "io_button[1]" IOSTANDARD = LVTTL;
-NET "io_button[1]" PULLDOWN;
-NET "io_button[2]" LOC = P139;
-NET "io_button[2]" IOSTANDARD = LVTTL;
-NET "io_button[2]" PULLDOWN;
-NET "io_button[3]" LOC = P142;
-NET "io_button[3]" IOSTANDARD = LVTTL;
-NET "io_button[3]" PULLDOWN;
-NET "io_button[4]" LOC = P138;
-NET "io_button[4]" IOSTANDARD = LVTTL;
-NET "io_button[4]" PULLDOWN;
+NET "io_button<0>" LOC = P137 | IOSTANDARD = LVTTL | PULLDOWN;
+NET "io_button<1>" LOC = P140 | IOSTANDARD = LVTTL | PULLDOWN;
+NET "io_button<2>" LOC = P139 | IOSTANDARD = LVTTL | PULLDOWN;
+NET "io_button<3>" LOC = P142 | IOSTANDARD = LVTTL | PULLDOWN;
+NET "io_button<4>" LOC = P138 | IOSTANDARD = LVTTL | PULLDOWN;
 
 NET "io_dip[23]" LOC = P57;
 NET "io_dip[23]" IOSTANDARD = LVTTL;

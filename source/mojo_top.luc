@@ -188,7 +188,7 @@ module mojo_top (
     add8.alufn10 = alufn[1:0];
     bool8.alufn30 = alufn[3:0];
     shift8.alufn10 = alufn[1:0];
-    compare8.alufn21 = alufn[2:1];
+    compare8.alufn31 = alufn[3:1];
     
     // TMUX to select operation
     case (alufn[5:4]) {

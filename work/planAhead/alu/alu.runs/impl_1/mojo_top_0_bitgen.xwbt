@@ -1,8 +1,0 @@
-INTSTYLE=pa
-INFILE=C:\Users\user\Desktop\8-bit-alu\work\planAhead\alu\alu.runs\impl_1\mojo_top_0_routed.ncd
-OUTFILE=C:\Users\user\Desktop\8-bit-alu\work\planAhead\alu\alu.runs\impl_1\mojo_top_0.bit
-FAMILY=Spartan6
-PART=xc6slx9-2tqg144
-WORKINGDIR=C:\Users\user\Desktop\8-bit-alu\work\planAhead\alu\alu.runs\impl_1
-LICENSE=WebPack
-USER_INFO=211250076_0_0_516
