@@ -1,18 +1,24 @@
 module compare (
-    input alufn21[2],
+    input alufn31[3],
     input z,
     input n,
     input v,
     output out[8]
   ) {
   always {
-    case (alufn21[1:0]) {
-      b01:
+    case (alufn31[2:0]) {
+      b001: // eq
         out[0] = z;
-      b10:
+      b010: // a > b
         out[0] = n^v;
-      b11:
+      b011: // a >= b
         out[0] = z|(n^v);
+      b100: // neq
+        out[0] = ~z;
+      b110: // a < b
+        out[0] = ~(z|(n^v));
+      b111: // a <= b 
+        out[0] = ~(n^v); 
       default:
         out[0] = z;
   }
