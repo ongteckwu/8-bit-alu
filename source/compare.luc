@@ -7,25 +7,20 @@ module compare (
     output out[8]
   ) {
   always {
-<<<<<<< HEAD
+    //choosing the operation based on the values of alufn[2:1]
     case (alufn31[2:0]) {
       b001: // eq
-=======
-    //choosing the operation based on the values of alufn[2:1]
-    case (alufn21[1:0]) {
-      b01:
->>>>>>> adds 7 segment display functionalityadds 7 segment display
         out[0] = z;
       b010: // a > b
-        out[0] = n^v;
+        out[0] = ~(z|(n^v));
       b011: // a >= b
-        out[0] = z|(n^v);
+        out[0] = ~(n^v); 
       b100: // neq
         out[0] = ~z;
-      b110: // a < b
-        out[0] = ~(z|(n^v));
+      b101: // a < b
+        out[0] = n^v;
       b111: // a <= b 
-        out[0] = ~(n^v); 
+        out[0] = z|(n^v);
       default:
         out[0] = z;
   }

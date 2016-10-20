@@ -8,7 +8,7 @@ module muxleftsign (
   sig sign;
   
   always {
-  sign = a[7];
+  sign = a[0];
       
   if(b[2] == 1){
       tp1[7:4] = a[3:0];

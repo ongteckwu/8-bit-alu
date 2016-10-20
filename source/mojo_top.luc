@@ -28,7 +28,7 @@ module mojo_top (
     .rst(rst){
       multi_seven_seg sseg;
       dff counter[28];
-      fsm state = {IDLE, ADDER1, ADDER2, BOOL1, BOOL2, BOOL3, BOOL4, SHIFT1, SHIFT2, SHIFT3, COMP1, COMP2, COMP3, END};
+      fsm state = {IDLE, ADDER1, ADDER2, ADDER3, ADDER4, ADDER5, BOOL1, BOOL2, BOOL3, BOOL4, BOOL5, BOOL6, BOOL7, BOOL8, SHIFT1, SHIFT2, SHIFT3, SHIFT4, COMP1, COMP2, COMP3, COMP4, COMP5, COMP6, END};
     }
   }
   
@@ -72,7 +72,7 @@ module mojo_top (
         counter.d = 0;
         if(fsm_switch == 1)
           state.d = state.q + 1;
-      state.ADDER1:
+      state.ADDER1:                        //AD
         a = 8b00011111;
         b = 8b0010101;
         alufn[5:0] = 6b0;
@@ -80,7 +80,7 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.ADDER2:
+      state.ADDER2:                        //SUB
         a = 8b00011111;
         b = 8b0010101;
         alufn[5:0] = 6b000001;
@@ -88,7 +88,31 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.BOOL1:
+      state.ADDER3:                        //MUL
+        a = 8b00000010;
+        b = 8b0000101;
+        alufn[5:0] = 6b000010;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.ADDER4:                        //DIV
+        a = 8b000010000;
+        b = 8b0000001;
+        alufn[5:0] = 6b000011;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.ADDER5:                        //MOD
+        a = 8b00000111;
+        b = 8b0000011;
+        alufn[5:0] = 6b000100;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL1:                          //AND
         a = 8b11001100;
         b = 8b10101010;
         alufn[5:0] = 6b011000;
@@ -96,7 +120,15 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.BOOL2:
+      state.BOOL2:                          //NAND
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b010111;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL3:                          //OR
         a = 8b11001100;
         b = 8b10101010;
         alufn[5:0] = 6b011110;
@@ -104,7 +136,15 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.BOOL3:
+      state.BOOL4:                          //NOR
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b010001;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL5:                          //XOR
         a = 8b11001100;
         b = 8b10101010;
         alufn[5:0] = 6b010110;
@@ -112,7 +152,15 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.BOOL4:
+      state.BOOL6:                          //XNOR
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b011001;
+        counter.d = counter.q + 1;      
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL7:                          //A
         a = 8b11001100;
         b = 8b10101010;
         alufn[5:0] = 6b011010;
@@ -120,7 +168,15 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.SHIFT1:
+      state.BOOL8:                          //B
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b011100;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.SHIFT1:                         //SHL
         a = 8b00000001;
         b = 8b00000110;
         alufn[5:0] = 6b100000;
@@ -128,7 +184,7 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.SHIFT2:
+      state.SHIFT2:                         //SHR
         a = 8b10000000;
         b = 8b00000110;
         alufn[5:0] = 6b100001;
@@ -136,7 +192,7 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.SHIFT3:
+      state.SHIFT3:                         //SRA
         a = 8b11000000;
         b = 8b00000101;
         alufn[5:0] = 6b100011;
@@ -144,15 +200,39 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.COMP1:
-        a = 8b00111111;
-        b = 8b00111111;
-        alufn[5:0] = 6b110011;
+      state.SHIFT4:                         //SLA
+        a = 8b00000011;
+        b = 8b00000101;
+        alufn[5:0] = 6b100010;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.COMP2:
+      state.COMP1:                          //CE
+        a = 8b00111111;
+        b = 8b00111111;
+        alufn[5:0] = 6b110111;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP2:                          //CLT
+        a = 8b00111111;
+        b = 8b00111110;
+        alufn[5:0] = 6b111011;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP3:                          //CLE
+        a = 8b00111110;
+        b = 8b00111111;
+        alufn[5:0] = 6b111111;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP4:                          //CMT
         a = 8b00111111;
         b = 8b00111110;
         alufn[5:0] = 6b110101;
@@ -160,10 +240,18 @@ module mojo_top (
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
-      state.COMP3:
-        a = 8b00111110;
-        b = 8b00111111;
+      state.COMP5:                          //CME
+        a = 8b00111111;
+        b = 8b00111110;
         alufn[5:0] = 6b110111;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP6:                          //CNE
+        a = 8b00111111;
+        b = 8b00111110;
+        alufn[5:0] = 6b111001;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
@@ -178,10 +266,8 @@ module mojo_top (
     if(fsm_switch == 0)
       state.d = state.IDLE;
       
-//    if(fsm_pause == 1)
-//      state.d = state.q;
-//    else
-//      state.d = state.q + 1;
+    if(fsm_pause == 1)
+      state.d = state.q;
      
     add8.a = a;
     add8.b = b;
@@ -221,7 +307,7 @@ module mojo_top (
       }
   
         case(alufn){
-      6b0:                //ADD
+      6b0:                     //ADD
         sseg.values[2] = 4b0001;
         sseg.values[1] = 4b0100;
         sseg.values[0] = 4b0100;
@@ -229,22 +315,50 @@ module mojo_top (
         sseg.values[2] = 4b1100;
         sseg.values[1] = 4b1101;
         sseg.values[0] = 4b0010;
+      6b000010:                //MUL
+        sseg.values[2] = 4b1111;
+        sseg.values[1] = 4b1101;
+        sseg.values[0] = 4b0111;
+      6b000011:                //DIV
+        sseg.values[2] = 4b0100;
+        sseg.values[1] = 4b1100;
+        sseg.values[0] = 4b1000;
+      6b000100:                //MOD
+        sseg.values[2] = 4b1111;
+        sseg.values[1] = 4b1001;
+        sseg.values[0] = 4b0100;
       6b011000:                //AND
         sseg.values[2] = 4b0001;
         sseg.values[1] = 4b1000;
         sseg.values[0] = 4b0100;
+      6b010111:                //NAND
+        sseg.values[2] = 4b1000;
+        sseg.values[1] = 4b0001;
+        sseg.values[0] = 4b1000;
       6b011110:                //OR
         sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b1001;
+        sseg.values[0] = 4b1011;
+      6b010001:                //NOR
+        sseg.values[2] = 4b1000;
         sseg.values[1] = 4b1001;
         sseg.values[0] = 4b1011;
       6b010110:                //XOR
         sseg.values[2] = 4b1110;
         sseg.values[1] = 4b1001;
         sseg.values[0] = 4b1011;
+      6b011001:                //XNOR
+        sseg.values[2] = 4b1110;
+        sseg.values[1] = 4b1000;
+        sseg.values[0] = 4b1001;
       6b011010:                //"A" LDR
         sseg.values[2] = 4b0000;
         sseg.values[1] = 4b0000;
         sseg.values[0] = 4b0001;
+      6b011100:                //"B" LDR
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0000;
+        sseg.values[0] = 4b0010;
       6b100000:                //SHL
         sseg.values[2] = 4b1100;
         sseg.values[1] = 4b0110;
@@ -257,17 +371,33 @@ module mojo_top (
         sseg.values[2] = 4b1100;
         sseg.values[1] = 4b1011;
         sseg.values[0] = 4b0001;
+      6b100010:                //SLA
+        sseg.values[2] = 4b1100;
+        sseg.values[1] = 4b0111;
+        sseg.values[0] = 4b0001;
       6b110011:                //CEQ
         sseg.values[2] = 4b0000;
         sseg.values[1] = 4b0011;
         sseg.values[0] = 4b0101;
-      6b110101:                //CLT
+      6b111011:                //CLT
         sseg.values[2] = 4b0000;
         sseg.values[1] = 4b0011;
         sseg.values[0] = 4b0111;
-      6b110111:                //CLE
+      6b111111:                //CLE
         sseg.values[2] = 4b0011;
         sseg.values[1] = 4b0111;
+        sseg.values[0] = 4b0101;
+      6b110101:                //CMT
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0011;
+        sseg.values[0] = 4b1111;
+      6b110111:                //CME
+        sseg.values[2] = 4b0011;
+        sseg.values[1] = 4b1111;
+        sseg.values[0] = 4b0101;
+      6b111001:                //CNE
+        sseg.values[2] = 4b0011;
+        sseg.values[1] = 4b1000;
         sseg.values[0] = 4b0101;
       default:
         sseg.values[2] = 4b1110;

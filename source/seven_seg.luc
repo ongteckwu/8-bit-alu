@@ -20,6 +20,7 @@ module seven_seg (
       12: segs = 7b1101101; // S
       13: segs = 7b0111110; // U
       14: segs = 7b1100100; // X
+      15: segs = 7b0010101; // M
       default: segs = 7b0000000; //None
     }
   }
