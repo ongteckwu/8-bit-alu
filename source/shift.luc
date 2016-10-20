@@ -1,3 +1,4 @@
+//8-bit shifter module using multiplexers
 module shift (
     input alufn10[2],
     input a[8],
@@ -5,16 +6,21 @@ module shift (
     output out[8]
     
   ) {
+  //multiplexers used for bit shifting
   muxleft mleft;
   muxright mright;
   muxrightsign mrights;
+  
   always {
+    //instantializing the multiplexers' inputs
     mleft.a = a;
     mleft.b = b;
     mright.a = a;
     mright.b = b;
     mrights.a = a;
     mrights.b = b;
+    
+    //choosing the multiplexer used based on the values of alufn[0:1]
     case(alufn10){
     2b00:
       out = mleft.x;

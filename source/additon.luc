@@ -1,3 +1,4 @@
+//8-bit adder module using XOR and AND operations
 module additon (
     input a[8],
     input b[8],
@@ -25,4 +26,3 @@ module additon (
         sum[7] = a[7]^b[7]^cout[7];
   }
 }
-//(a[0]&b[0]);

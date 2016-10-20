@@ -1,3 +1,4 @@
+//8-bit compare module
 module compare (
     input alufn31[3],
     input z,
@@ -6,8 +7,14 @@ module compare (
     output out[8]
   ) {
   always {
+<<<<<<< HEAD
     case (alufn31[2:0]) {
       b001: // eq
+=======
+    //choosing the operation based on the values of alufn[2:1]
+    case (alufn21[1:0]) {
+      b01:
+>>>>>>> adds 7 segment display functionalityadds 7 segment display
         out[0] = z;
       b010: // a > b
         out[0] = n^v;

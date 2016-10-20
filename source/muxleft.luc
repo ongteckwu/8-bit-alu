@@ -1,21 +1,26 @@
+// multiplexer to shift a bits by b steps to the left
 module muxleft (
     input b[3],
     input a[8],
     output x[8]
   ) {
+  //temporary values to store shift bits
   sig tp1[8];
   sig tp2[8];
   always {
+  //shift by 4 bits
   if(b[2] == 1){
       tp1[7:4] = a[3:0];
       tp1[3:0] = 4b0000;}
   else
     tp1 = a;
+  //shift by 2 bits
   if(b[1] == 1){
       tp2[7:2] = tp1[5:0];
       tp2[1:0] = 2b00;}
   else
       tp2 = tp1;
+  //shift by 1 bit
   if(b[0] == 1){
       x[7:1] = tp2[6:0];
       x[0] = 0;}

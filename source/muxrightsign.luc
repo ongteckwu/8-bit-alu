@@ -1,26 +1,26 @@
-// multiplexer to shift a bits by b steps with sign
+// multiplexer to shift a bits by b steps to the left with sign on the MSB
 module muxrightsign (
     input b[3],
     input a[8],
     output x[8]
   ) {
-  //temporary values to store shifte bits
+  //temporary values to store shift bits
   sig tp1[8];
   sig tp2[8];
   always {
-  //shift by 4
+  //shift by 4 bits
   if(b[2] == 1){
       tp1[7:4] = 4x{a[7]};
       tp1[3:0] = a[7:4];}
   else
     tp1 = a;
-  //shift by 2
+  //shift by 2 bits
   if(b[1] == 1){
       tp2[7:6] = 2x{tp1[7]};
       tp2[5:0] = tp1[7:2];}
   else
       tp2 = tp1;
-  //shift by 1
+  //shift by 1 bit
   if(b[0] == 1){
       x[7] = tp2[7];
       x[6:0] = tp2[7:1];}

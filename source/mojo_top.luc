@@ -3,25 +3,19 @@ global Ops {
   const BOOL = 2b01;
   const SHIFT = 2b10;
   const COMP = 2b11;
+  const DELAY = 2^26 / 50000000;
 }
 
 module mojo_top (
     input clk,              // 50MHz clock
     input rst_n,            // reset button (active low)
     output led [8],         // 8 user controllable LEDs
-    input cclk,             // configuration clock, AVR ready when high
     output spi_miso,        // AVR SPI MISO
-    input spi_ss,           // AVR SPI Slave Select
-    input spi_mosi,         // AVR SPI MOSI
-    input spi_sck,          // AVR SPI Clock
     output spi_channel [4], // AVR general purpose pins (used by default to select ADC channel)
-    input avr_tx,           // AVR TX (FPGA RX)
     output avr_rx,          // AVR RX (FPGA TX)
-    input avr_rx_busy,      // AVR RX buffer full
     output io_led [3][8],   // LEDs on IO Shield
     output io_seg [8],      // 7-segment LEDs on IO Shield
     output io_sel [4],      // Digit select on IO Shield
-    input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8]     // DIP switches on IO Shield
   ) {
   
@@ -30,7 +24,12 @@ module mojo_top (
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
-    
+
+    .rst(rst){
+      multi_seven_seg sseg;
+      dff counter[28];
+      fsm state = {IDLE, ADDER1, ADDER2, BOOL1, BOOL2, BOOL3, BOOL4, SHIFT1, SHIFT2, SHIFT3, COMP1, COMP2, COMP3, END};
+    }
   }
   
   // signals for readability
@@ -38,6 +37,7 @@ module mojo_top (
   sig a[8];
   sig b[8];
   sig o8[8];
+  sig fsm_switch;
   
   // initialize components
   add add8;//(8b0),.b(8b0),.alufn10(2b0));
@@ -63,19 +63,131 @@ module mojo_top (
     alufn[5:0] = io_dip[2][5:0];
     a[7:0] = io_dip[1][7:0];
     b[7:0] = io_dip[0][7:0];
+    fsm_switch = io_dip[2][7];
+        
+    case (state.q){
+      state.IDLE:
+        counter.d = 0;
+        if(fsm_switch == 1)
+          state.d = state.q + 1;
+      state.ADDER1:
+        a = 8b00011111;
+        b = 8b0010101;
+        alufn[5:0] = 6b0;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.ADDER2:
+        a = 8b00011111;
+        b = 8b0010101;
+        alufn[5:0] = 6b000001;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL1:
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b011000;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL2:
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b011110;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL3:
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b010110;
+        counter.d = counter.q + 1;      
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.BOOL4:
+        a = 8b11001100;
+        b = 8b10101010;
+        alufn[5:0] = 6b011010;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.SHIFT1:
+        a = 8b00000001;
+        b = 8b00000110;
+        alufn[5:0] = 6b100000;
+        counter.d = counter.q + 1;      
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.SHIFT2:
+        a = 8b10000000;
+        b = 8b00000110;
+        alufn[5:0] = 6b100001;
+        counter.d = counter.q + 1;      
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.SHIFT3:
+        a = 8b11000000;
+        b = 8b00000101;
+        alufn[5:0] = 6b100011;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP1:
+        a = 8b00111111;
+        b = 8b00111111;
+        alufn[5:0] = 6b110011;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP2:
+        a = 8b00111111;
+        b = 8b00111110;
+        alufn[5:0] = 6b110101;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.COMP3:
+        a = 8b00111110;
+        b = 8b00111111;
+        alufn[5:0] = 6b110111;
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.q + 1;
+          counter.d = 0;}
+      state.END:
+        counter.d = counter.q + 1;
+        if (counter.q[27]){
+        state.d = state.IDLE;
+          counter.d = 0;}
+      }
     
+    if(fsm_switch == 0)
+      state.d = state.IDLE;
+     
     add8.a = a;
     add8.b = b;
-    add8.alufn10 = alufn[1:0];
     bool8.a = a;
     bool8.b = b;
-    bool8.alufn30 = alufn[3:0];
     shift8.a = a;
     shift8.b = b[2:0];
-    shift8.alufn10 = alufn[1:0];
     compare8.z = add8.z;
     compare8.v = add8.v;
     compare8.n = add8.n;
+    add8.alufn10 = alufn[1:0];
+    bool8.alufn30 = alufn[3:0];
+    shift8.alufn10 = alufn[1:0];
     compare8.alufn21 = alufn[2:1];
     
     // TMUX to select operation
@@ -99,11 +211,69 @@ module mojo_top (
         
       default:
         o8 = 8b1;
+      }
+  
+        case(alufn){
+      6b0:                //ADD
+        sseg.values[2] = 4b0001;
+        sseg.values[1] = 4b0100;
+        sseg.values[0] = 4b0100;
+      6b000001:                //SUB
+        sseg.values[2] = 4b1100;
+        sseg.values[1] = 4b1101;
+        sseg.values[0] = 4b0010;
+      6b011000:                //AND
+        sseg.values[2] = 4b0001;
+        sseg.values[1] = 4b1000;
+        sseg.values[0] = 4b0100;
+      6b011110:                //OR
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b1001;
+        sseg.values[0] = 4b1011;
+      6b010110:                //XOR
+        sseg.values[2] = 4b1110;
+        sseg.values[1] = 4b1001;
+        sseg.values[0] = 4b1011;
+      6b011010:                //"A" LDR
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0000;
+        sseg.values[0] = 4b0001;
+      6b100000:                //SHL
+        sseg.values[2] = 4b1100;
+        sseg.values[1] = 4b0110;
+        sseg.values[0] = 4b0111;
+      6b100001:                //SHR
+        sseg.values[2] = 4b1100;
+        sseg.values[1] = 4b0110;
+        sseg.values[0] = 4b1011;
+      6b100011:                //SRA
+        sseg.values[2] = 4b1100;
+        sseg.values[1] = 4b1011;
+        sseg.values[0] = 4b0001;
+      6b110011:                //CEQ
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0011;
+        sseg.values[0] = 4b0101;
+      6b110101:                //CLT
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0011;
+        sseg.values[0] = 4b0111;
+      6b110111:                //CLE
+        sseg.values[2] = 4b0011;
+        sseg.values[1] = 4b0111;
+        sseg.values[0] = 4b0101;
+      default:
+        sseg.values[2] = 4b1110;
+        sseg.values[1] = 4b1110;
+        sseg.values[0] = 4b1110;
+
     }
-    
+
     // output of ALU 
     io_led[0] = o8;
-    
-    
+    io_led[1] = b;
+    io_led[2] = a;
+    io_seg = ~sseg.seg;
+    io_sel = ~sseg.sel;
   }
 }
