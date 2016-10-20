@@ -1,3 +1,4 @@
+//8-bit compare module
 module compare (
     input alufn21[2],
     input z,
@@ -6,6 +7,7 @@ module compare (
     output out[8]
   ) {
   always {
+    //choosing the operation based on the values of alufn[2:1]
     case (alufn21[1:0]) {
       b01:
         out[0] = z;

@@ -4,6 +4,7 @@
     <src>shift.luc</src>
     <src>bool.luc</src>
     <src>add.luc</src>
+    <src>seven_seg.luc</src>
     <src>muxleft.luc</src>
     <src>additon.luc</src>
     <src>compare.luc</src>
