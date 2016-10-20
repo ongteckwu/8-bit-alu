@@ -38,6 +38,7 @@ module mojo_top (
   sig b[8];
   sig o8[8];
   sig fsm_switch;
+  sig fsm_pause;
   
   // initialize components
   add add8;//(8b0),.b(8b0),.alufn10(2b0));
@@ -64,7 +65,8 @@ module mojo_top (
     a[7:0] = io_dip[1][7:0];
     b[7:0] = io_dip[0][7:0];
     fsm_switch = io_dip[2][7];
-        
+    fsm_pause = io_dip[2][6];
+    
     case (state.q){
       state.IDLE:
         counter.d = 0;
@@ -175,6 +177,11 @@ module mojo_top (
     
     if(fsm_switch == 0)
       state.d = state.IDLE;
+      
+//    if(fsm_pause == 1)
+//      state.d = state.q;
+//    else
+//      state.d = state.q + 1;
      
     add8.a = a;
     add8.b = b;
