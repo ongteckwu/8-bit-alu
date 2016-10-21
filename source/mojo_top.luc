@@ -26,6 +26,7 @@ module mojo_top (
     reset_conditioner reset_cond;
 
     .rst(rst){
+      pn_gen rng;
       multi_seven_seg sseg;
       dff counter[28];
       fsm state = {IDLE, ADDER1, ADDER2, ADDER3, ADDER4, ADDER5, BOOL1, BOOL2, BOOL3, BOOL4, BOOL5, BOOL6, BOOL7, BOOL8, SHIFT1, SHIFT2, SHIFT3, SHIFT4, COMP1, COMP2, COMP3, COMP4, COMP5, COMP6, END};
@@ -60,6 +61,8 @@ module mojo_top (
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits  
     
+    rng.seed = clk;         //hooking the seed to the clock
+    
     // inputs of ALU
     alufn[5:0] = io_dip[2][5:0];
     a[7:0] = io_dip[1][7:0];
@@ -67,190 +70,165 @@ module mojo_top (
     fsm_switch = io_dip[2][7];
     fsm_pause = io_dip[2][6];
     
+    //Using the flip flop to start rng generation at 1.36 second intervals
+    if(counter.q[27])
+        rng.next = 1;
+    else
+        rng.next = 0;
+
+    //Pseudo rng numbers for testing
+    if(fsm_switch == 1){
+      a = rng.num[7:0];
+      b = rng.num[15:8];
+    }
+    
+    //Fsm for automated testing with randomly generated numbers
     case (state.q){
-      state.IDLE:
+      state.IDLE:                          //IDLE
         counter.d = 0;
         if(fsm_switch == 1)
           state.d = state.q + 1;
-      state.ADDER1:                        //AD
-        a = 8b00011111;
-        b = 8b0010101;
+      state.ADDER1:                        //ADD
         alufn[5:0] = 6b0;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.ADDER2:                        //SUB
-        a = 8b00011111;
-        b = 8b0010101;
+        b[7] = 0;
         alufn[5:0] = 6b000001;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.ADDER3:                        //MUL
-        a = 8b00000010;
-        b = 8b0000101;
+        b[7:2] = 6b0;
         alufn[5:0] = 6b000010;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.ADDER4:                        //DIV
-        a = 8b000010000;
-        b = 8b0000001;
+        b[7:2] = 6b0;
         alufn[5:0] = 6b000011;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.ADDER5:                        //MOD
-        a = 8b00000111;
-        b = 8b0000011;
+        b[7:2] = 6b0;
         alufn[5:0] = 6b000100;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL1:                          //AND
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b011000;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL2:                          //NAND
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b010111;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL3:                          //OR
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b011110;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL4:                          //NOR
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b010001;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL5:                          //XOR
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b010110;
         counter.d = counter.q + 1;      
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL6:                          //XNOR
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b011001;
         counter.d = counter.q + 1;      
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL7:                          //A
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b011010;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.BOOL8:                          //B
-        a = 8b11001100;
-        b = 8b10101010;
         alufn[5:0] = 6b011100;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.SHIFT1:                         //SHL
-        a = 8b00000001;
-        b = 8b00000110;
+        b[7:3] = 5b0;
         alufn[5:0] = 6b100000;
         counter.d = counter.q + 1;      
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.SHIFT2:                         //SHR
-        a = 8b10000000;
-        b = 8b00000110;
+        b[7:3] = 5b0;
         alufn[5:0] = 6b100001;
         counter.d = counter.q + 1;      
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.SHIFT3:                         //SRA
-        a = 8b11000000;
-        b = 8b00000101;
+        b[7:3] = 5b0;
         alufn[5:0] = 6b100011;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.SHIFT4:                         //SLA
-        a = 8b00000011;
-        b = 8b00000101;
+        b[7:3] = 5b0;
         alufn[5:0] = 6b100010;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP1:                          //CE
-        a = 8b00111111;
-        b = 8b00111111;
         alufn[5:0] = 6b110111;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP2:                          //CLT
-        a = 8b00111111;
-        b = 8b00111110;
         alufn[5:0] = 6b111011;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP3:                          //CLE
-        a = 8b00111110;
-        b = 8b00111111;
         alufn[5:0] = 6b111111;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP4:                          //CMT
-        a = 8b00111111;
-        b = 8b00111110;
         alufn[5:0] = 6b110101;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP5:                          //CME
-        a = 8b00111111;
-        b = 8b00111110;
         alufn[5:0] = 6b110111;
         counter.d = counter.q + 1;
         if (counter.q[27]){
         state.d = state.q + 1;
           counter.d = 0;}
       state.COMP6:                          //CNE
-        a = 8b00111111;
-        b = 8b00111110;
         alufn[5:0] = 6b111001;
         counter.d = counter.q + 1;
         if (counter.q[27]){
@@ -263,11 +241,15 @@ module mojo_top (
           counter.d = 0;}
       }
     
+    //Switch to stop fsm testing
     if(fsm_switch == 0)
       state.d = state.IDLE;
-      
-    if(fsm_pause == 1)
+    
+    //Switch to pause fsm for eyeball testing and pause rng generation
+    if(fsm_pause == 1){
       state.d = state.q;
+      rng.next = 0;
+    }
      
     add8.a = a;
     add8.b = b;
@@ -306,7 +288,8 @@ module mojo_top (
         o8 = 8b1;
       }
   
-        case(alufn){
+    //7 segment controller for 3 letter representation of all operations
+    case(alufn){
       6b0:                     //ADD
         sseg.values[2] = 4b0001;
         sseg.values[1] = 4b0100;
@@ -320,13 +303,27 @@ module mojo_top (
         sseg.values[1] = 4b1101;
         sseg.values[0] = 4b0111;
       6b000011:                //DIV
+        //Error checking (Divide by zero)
+        if(b==0){
+          sseg.values[2] = 4b0101;
+          sseg.values[1] = 4b1011;
+          sseg.values[0] = 4b1011;
+        }
+        else{
         sseg.values[2] = 4b0100;
         sseg.values[1] = 4b1100;
-        sseg.values[0] = 4b1000;
+        sseg.values[0] = 4b1000;}
       6b000100:                //MOD
+        //Error checking (Divide by zero)
+        if(b==0){
+          sseg.values[2] = 4b0101;
+          sseg.values[1] = 4b1011;
+          sseg.values[0] = 4b1011;
+        }
+        else{
         sseg.values[2] = 4b1111;
         sseg.values[1] = 4b1001;
-        sseg.values[0] = 4b0100;
+        sseg.values[0] = 4b0100;}
       6b011000:                //AND
         sseg.values[2] = 4b0001;
         sseg.values[1] = 4b1000;
@@ -400,9 +397,9 @@ module mojo_top (
         sseg.values[1] = 4b1000;
         sseg.values[0] = 4b0101;
       default:
-        sseg.values[2] = 4b1110;
-        sseg.values[1] = 4b1110;
-        sseg.values[0] = 4b1110;
+        sseg.values[2] = 4b0000;
+        sseg.values[1] = 4b0000;
+        sseg.values[0] = 4b0000;
 
     }
 
